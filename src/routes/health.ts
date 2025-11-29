@@ -18,12 +18,16 @@ const greetSchema = Joi.object({
   name: Joi.string().min(1).max(50).required(),
 });
 
-router.post('/greet', validate(greetSchema), (req: Request, res: Response): void => {
-  const { name } = req.body;
-  res.status(200).json({
-    success: true,
-    message: `Hello ${name}!`,
-  });
-});
+router.post(
+  '/greet',
+  validate(greetSchema),
+  (req: Request, res: Response): void => {
+    const { name } = req.body as { name: string };
+    res.status(200).json({
+      success: true,
+      message: `Hello ${name}!`,
+    });
+  }
+);
 
 export default router;
