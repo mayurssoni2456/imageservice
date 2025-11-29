@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express';
-import { config } from './config/env.js';
-import { logger } from './config/logger.js';
-import { errorHandler } from './middleware/errorHandler.js';
-import healthRoutes from './routes/health.js';
+import { config } from './config/env';
+import { logger } from './config/logger';
+import { errorHandler } from './middleware/errorHandler';
+import healthRoutes from './routes/health';
 
 const app = express();
 
@@ -23,7 +23,7 @@ app.use('/health', healthRoutes);
 app.get('/', (req: Request, res: Response): void => {
   res.status(200).json({
     success: true,
-    message: 'Welcome to Image Service API',
+    message: 'Hi.... Image Service API',
   });
 });
 
