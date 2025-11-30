@@ -1,0 +1,9 @@
+{
+  "routeKey": "GET /unknown",
+  "requestContext": { "http": { "method": "GET" } },
+  "rawPath": "/unknown",
+  "version": "2.0",
+  "rawQueryString": "",
+  "headers": {},
+  "isBase64Encoded": false
+}

@@ -32,3 +32,10 @@ coverage/
 .cache/
 
 SETUP_GUIDE.md
+
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+dist/handler.zip
+terraform.tfstate
