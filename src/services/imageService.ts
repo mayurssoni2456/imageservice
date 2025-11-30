@@ -4,8 +4,10 @@ import { IImageStorageService } from './imageStorageService.interface';
 import { IImageRepository } from '../repositories/imageRepository.interface';
 import { ImageRepository } from '../repositories/imageRepository';
 import { ImageMetadata } from '../models/imageMetadata.model';
-import { logger } from '../common/logger';
 import { NotFoundError } from '../common/errors';
+import { getLogger } from '../common/logger';
+
+const logger = getLogger('ImageService');
 
 export interface PresignUploadResult {
   imageId: string;
@@ -28,6 +30,10 @@ export class ImageService {
     originalName: string,
     contentType: string
   ): Promise<PresignUploadResult> {
+    logger.info('generatePresignedUpload called', {
+      fileName: originalName,
+      fileType: contentType,
+    });
     const imageId = uuidv4();
 
     // Generate presigned URL (5 min expiry)
@@ -59,6 +65,7 @@ export class ImageService {
   async getImage(
     imageId: string
   ): Promise<{ buffer: Buffer; contentType: string }> {
+    logger.info('getImage called', { imageId });
     // Check metadata exists
     const metadata = await this.imageRepository.findById(imageId);
     if (!metadata) {
@@ -73,6 +80,7 @@ export class ImageService {
   }
 
   async deleteImage(imageId: string): Promise<void> {
+    logger.info('deleteImage called', { imageId });
     // Check metadata exists
     const metadata = await this.imageRepository.findById(imageId);
     if (!metadata) {

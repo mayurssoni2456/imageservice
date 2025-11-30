@@ -6,9 +6,11 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { config } from '../config/env';
-import { logger } from '../common/logger';
 import { InternalError, NotFoundError } from '../common/errors';
 import { IImageStorageService } from './imageStorageService.interface';
+import { getLogger } from '../common/logger';
+
+const logger = getLogger('ImageStorageService');
 
 export class ImageStorageService implements IImageStorageService {
   private s3Client: S3Client;
@@ -24,6 +26,11 @@ export class ImageStorageService implements IImageStorageService {
     contentType: string,
     expiresIn = 300
   ): Promise<string> {
+    logger.info('getPresignedUploadUrl called', {
+      imageId,
+      contentType,
+      expiresIn,
+    });
     try {
       const command = new PutObjectCommand({
         Bucket: this.bucketName,
@@ -49,6 +56,7 @@ export class ImageStorageService implements IImageStorageService {
   async getImage(
     imageId: string
   ): Promise<{ buffer: Buffer; contentType: string }> {
+    logger.info('getImage called', { imageId });
     try {
       const command = new GetObjectCommand({
         Bucket: this.bucketName,
@@ -74,6 +82,7 @@ export class ImageStorageService implements IImageStorageService {
   }
 
   async deleteImage(imageId: string): Promise<void> {
+    logger.info('deleteImage called', { imageId });
     try {
       const command = new DeleteObjectCommand({
         Bucket: this.bucketName,

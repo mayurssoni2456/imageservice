@@ -8,8 +8,10 @@ import {
 import { IImageRepository } from './imageRepository.interface';
 import { ImageMetadata } from '../models/imageMetadata.model';
 import { config } from '../config/env';
-import { logger } from '../common/logger';
 import { InternalError } from '../common/errors';
+import { getLogger } from '../common/logger';
+
+const logger = getLogger('ImageRepository');
 
 export class ImageRepository implements IImageRepository {
   private docClient: DynamoDBDocumentClient;

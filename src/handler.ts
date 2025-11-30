@@ -1,7 +1,9 @@
 import { dispatch } from './router';
-import { logger } from './common/logger';
+import { getLogger } from './common/logger';
 import { LambdaEvent } from './dto/image.dto';
 import { APIGatewayProxyResultV2 } from 'aws-lambda';
+
+const logger = getLogger('handler');
 
 export const handler = async (
   event: LambdaEvent

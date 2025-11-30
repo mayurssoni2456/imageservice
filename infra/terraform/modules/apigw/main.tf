@@ -1,14 +1,14 @@
 resource "aws_apigatewayv2_api" "http" {
   name          = var.name
   protocol_type = "HTTP"
-  
+
   cors_configuration {
     allow_origins = var.cors_allowed_origins
     allow_methods = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
     allow_headers = ["content-type", "x-api-key", "authorization"]
     max_age       = 300
   }
-  
+
   tags = var.tags
 }
 
@@ -63,13 +63,29 @@ resource "aws_apigatewayv2_stage" "this" {
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.api_logs.arn
     format = jsonencode({
-      requestId      = "$context.requestId",
-      ip             = "$context.identity.sourceIp",
-      httpMethod     = "$context.httpMethod",
-      routeKey       = "$context.routeKey",
-      status         = "$context.status",
-      protocol       = "$context.protocol",
-      responseLength = "$context.responseLength"
+      # Core request/response
+      requestId        = "$context.requestId"
+      requestTime      = "$context.requestTime"
+      httpMethod       = "$context.httpMethod"
+      routeKey         = "$context.routeKey"
+      status           = "$context.status"
+      
+      # Performance metrics
+      responseLatency    = "$context.responseLatency"
+      integrationLatency = "$context.integrationLatency"
+      responseLength     = "$context.responseLength"
+      
+      # Client info
+      sourceIp         = "$context.identity.sourceIp"
+      userAgent        = "$context.identity.userAgent"
+      
+      # Errors (only populated if error occurs)
+      zErrorMessage     = "$context.error.message"
+      zIntegrationError = "$context.integrationErrorMessage"
+      
+      # API context
+      protocol         = "$context.protocol"
+      stage            = "$context.stage"
     })
   }
 
