@@ -4,6 +4,7 @@ import {
   GetObjectCommand,
   DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { config } from '../config/env';
 import { logger } from '../common/logger';
 import { InternalError, NotFoundError } from '../common/errors';
@@ -18,24 +19,30 @@ export class ImageStorageService implements IImageStorageService {
     this.bucketName = config.s3BucketName;
   }
 
-  async uploadImage(
+  async getPresignedUploadUrl(
     imageId: string,
-    fileBuffer: Buffer,
-    contentType: string
-  ): Promise<void> {
+    contentType: string,
+    expiresIn = 300
+  ): Promise<string> {
     try {
       const command = new PutObjectCommand({
         Bucket: this.bucketName,
         Key: imageId,
-        Body: fileBuffer,
-        ContentType: contentType,
+        // Don't include ContentType here - let client set it during upload
+        // This avoids signature mismatch if client doesn't send exact header
       });
 
-      await this.s3Client.send(command);
-      logger.info(`Image uploaded to S3: ${imageId}`);
+      const signedUrl = await getSignedUrl(this.s3Client, command, {
+        expiresIn,
+      });
+
+      logger.info(`Presigned URL generated for: ${imageId}`);
+      return signedUrl;
     } catch (error) {
-      logger.error(`S3 upload error: ${(error as Error).message}`);
-      throw new InternalError('Failed to upload image to storage');
+      logger.error(
+        `S3 presigned URL generation error: ${(error as Error).message}`
+      );
+      throw new InternalError('Failed to generate presigned upload URL');
     }
   }
 
@@ -54,7 +61,7 @@ export class ImageStorageService implements IImageStorageService {
         throw new NotFoundError('Image not found in storage');
       }
 
-      const buffer = await this.streamToBuffer(response.Body);
+      const buffer = Buffer.from(await response.Body.transformToByteArray());
       const contentType = response.ContentType || 'application/octet-stream';
 
       logger.info(`Image retrieved from S3: ${imageId}`);
@@ -79,13 +86,5 @@ export class ImageStorageService implements IImageStorageService {
       logger.error(`S3 delete error: ${(error as Error).message}`);
       throw new InternalError('Failed to delete image from storage');
     }
-  }
-
-  private async streamToBuffer(stream: NodeJS.ReadableStream): Promise<Buffer> {
-    const chunks: Uint8Array[] = [];
-    for await (const chunk of stream) {
-      chunks.push(chunk as Uint8Array);
-    }
-    return Buffer.concat(chunks);
   }
 }

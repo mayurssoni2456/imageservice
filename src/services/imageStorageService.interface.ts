@@ -1,9 +1,9 @@
 export interface IImageStorageService {
-  uploadImage(
+  getPresignedUploadUrl(
     imageId: string,
-    fileBuffer: Buffer,
-    contentType: string
-  ): Promise<void>;
+    contentType: string,
+    expiresIn?: number
+  ): Promise<string>;
   getImage(imageId: string): Promise<{ buffer: Buffer; contentType: string }>;
   deleteImage(imageId: string): Promise<void>;
 }

@@ -1,8 +1,8 @@
 {
   "routeKey": "GET /images/{id}",
-  "pathParameters": { "id": "non-existent-id" },
+  "pathParameters": { "id": "0cad9671-04f1-4ff0-aa0a-c4a4158e6d9e" },
   "requestContext": { "http": { "method": "GET" } },
-  "rawPath": "/images/non-existent-id",
+  "rawPath": "/images/0cad9671-04f1-4ff0-aa0a-c4a4158e6d9e",
   "version": "2.0",
   "rawQueryString": "",
   "headers": {},

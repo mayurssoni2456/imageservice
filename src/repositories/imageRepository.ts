@@ -38,12 +38,17 @@ export class ImageRepository implements IImageRepository {
 
   async findById(imageId: string): Promise<ImageMetadata | null> {
     try {
+      logger.info(
+        `Querying DynamoDB: Table=${this.tableName}, Key=${JSON.stringify({ imageId })}`
+      );
       const command = new GetCommand({
         TableName: this.tableName,
         Key: { imageId },
       });
 
       const response = await this.docClient.send(command);
+
+      logger.info(`DynamoDB response: ${JSON.stringify(response)}`);
 
       if (!response.Item) {
         return null;

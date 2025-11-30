@@ -9,6 +9,11 @@ jest.mock('uuid', () => ({
 // Mock AWS SDK to avoid real AWS calls in tests
 jest.mock('@aws-sdk/client-s3');
 jest.mock('@aws-sdk/client-dynamodb');
+jest.mock('@aws-sdk/s3-request-presigner', () => ({
+  getSignedUrl: jest
+    .fn()
+    .mockResolvedValue('https://s3.amazonaws.com/presigned-url'),
+}));
 jest.mock('@aws-sdk/lib-dynamodb', () => ({
   DynamoDBDocumentClient: {
     from: jest.fn(() => ({
@@ -126,7 +131,7 @@ describe('Lambda Handler - API Gateway Events', () => {
       const event = {
         routeKey: 'POST /images/presign',
         body: JSON.stringify({
-          originalName: 'test.jpg',
+          filename: 'test.jpg',
           contentType: 'image/jpeg',
         }),
         requestContext: {

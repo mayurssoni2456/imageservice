@@ -1,4 +1,3 @@
-data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 output "deployed_account_id" {
@@ -20,3 +19,12 @@ output "lambda_function_name" {
   value       = module.lambda.function_name
 }
 
+output "s3_bucket_name" {
+  description = "S3 bucket name for image storage"
+  value       = aws_s3_bucket.images.id
+}
+
+output "dynamodb_table_name" {
+  description = "DynamoDB table name for image metadata"
+  value       = aws_dynamodb_table.image_metadata.name
+}

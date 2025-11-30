@@ -9,6 +9,15 @@ resource "aws_lambda_function" "this" {
   memory_size = 128
   timeout     = 15
 
+  environment {
+    variables = {
+      NODE_ENV            = var.environment
+      S3_BUCKET_NAME      = var.s3_bucket_name
+      DYNAMODB_TABLE_NAME = var.dynamodb_table_name
+      LOG_LEVEL           = "info"
+    }
+  }
+
   tags = var.tags
 }
 

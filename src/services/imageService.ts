@@ -7,9 +7,9 @@ import { ImageMetadata } from '../models/imageMetadata.model';
 import { logger } from '../common/logger';
 import { NotFoundError } from '../common/errors';
 
-export interface UploadResult {
+export interface PresignUploadResult {
   imageId: string;
-  url: string;
+  uploadUrl: string;
 }
 
 export class ImageService {
@@ -24,38 +24,35 @@ export class ImageService {
     this.imageRepository = imageRepository || new ImageRepository();
   }
 
-  async uploadImage(
-    fileBuffer: Buffer,
+  async generatePresignedUpload(
     originalName: string,
     contentType: string
-  ): Promise<UploadResult> {
+  ): Promise<PresignUploadResult> {
     const imageId = uuidv4();
 
-    // Upload to S3
-    await this.storageService.uploadImage(imageId, fileBuffer, contentType);
+    // Generate presigned URL (5 min expiry)
+    const uploadUrl = await this.storageService.getPresignedUploadUrl(
+      imageId,
+      contentType,
+      300
+    );
 
-    // Save metadata to DynamoDB
+    // Save initial metadata (status: pending upload)
     const metadata: ImageMetadata = {
       imageId,
       originalName,
       contentType,
-      size: fileBuffer.length,
+      size: 0, // Unknown until upload completes
       uploadedAt: new Date().toISOString(),
     };
 
-    try {
-      await this.imageRepository.save(metadata);
-    } catch (error) {
-      // Rollback: delete from S3 if metadata save failed
-      await this.storageService.deleteImage(imageId);
-      throw error;
-    }
+    await this.imageRepository.save(metadata);
 
-    logger.info(`Image uploaded successfully: ${imageId}`);
+    logger.info(`Presigned upload URL generated for: ${imageId}`);
 
     return {
       imageId,
-      url: `/images/${imageId}`,
+      uploadUrl,
     };
   }
 

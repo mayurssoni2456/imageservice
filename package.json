@@ -30,9 +30,9 @@
     "infra:bootstrap:init": "terraform -chdir=infra/bootstrap init",
     "infra:bootstrap:apply": "terraform -chdir=infra/bootstrap apply -auto-approve",
     "infra:destroy:dev": "terraform -chdir=infra/terraform workspace select dev && terraform destroy -var-file=env/dev.tfvars",
-    "infra:package": "rm -rf dist && npm run build && npm ci --omit=dev && cp -r node_modules dist/ && cd dist && zip -r handler.zip . && cd .. && npm install",
+    "infra:package": "npm run build && cp package.json package-lock.json dist/ && cd dist && npm ci --omit=dev --ignore-scripts && zip -r handler.zip . && cd ..",
     "infra:outputs": "terraform -chdir=infra/terraform output -json",
-    "prepare": "husky"
+    "prepare": ""
   },
   "lint-staged": {
     "*.ts": [
@@ -55,6 +55,7 @@
     "@aws-sdk/client-dynamodb": "^3.940.0",
     "@aws-sdk/client-s3": "^3.940.0",
     "@aws-sdk/lib-dynamodb": "^3.940.0",
+    "@aws-sdk/s3-request-presigner": "^3.940.0",
     "@types/aws-lambda": "^8.10.159",
     "@types/jest": "^29.5.0",
     "@types/node": "^18.0.0",
@@ -65,7 +66,6 @@
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
-    "husky": "^9.1.7",
     "jest": "^29.5.0",
     "lint-staged": "^16.2.7",
     "prettier": "^3.0.0",

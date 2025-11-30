@@ -12,3 +12,6 @@ tags = {
   project = "imageservice"
   env     = "dev"
 }
+
+# Explicit S3 bucket name for dev (must be globally unique)
+s3_bucket_name = "imageservice-product-dev"

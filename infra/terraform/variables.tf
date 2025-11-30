@@ -42,3 +42,9 @@ variable "cors_allowed_origins" {
   type        = list(string)
   default     = ["*"]
 }
+
+variable "s3_bucket_name" {
+  description = "Name of the S3 bucket for image storage"
+  type        = string
+  default     = "imageservice-dev"
+}

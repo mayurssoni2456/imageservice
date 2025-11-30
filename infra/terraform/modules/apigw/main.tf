@@ -32,6 +32,24 @@ resource "aws_apigatewayv2_route" "presign" {
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
 }
 
+resource "aws_apigatewayv2_route" "getimage" {
+  api_id    = aws_apigatewayv2_api.http.id
+  route_key = "GET /images/{id}"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
+resource "aws_apigatewayv2_route" "putimage" {
+  api_id    = aws_apigatewayv2_api.http.id
+  route_key = "PUT /images/{id}"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
+resource "aws_apigatewayv2_route" "deleteimage" {
+  api_id    = aws_apigatewayv2_api.http.id
+  route_key = "DELETE /images/{id}"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
 resource "aws_apigatewayv2_stage" "this" {
   api_id      = aws_apigatewayv2_api.http.id
   name        = var.stage_name
