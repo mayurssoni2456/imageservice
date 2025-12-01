@@ -19,8 +19,5 @@ void (async (): Promise<void> => {
   console.log(`Invoking handler with event file: ${fullPath}`);
   const response = await handler(event);
 
-  console.log('\n--- Lambda Response ---');
-  console.log('Status:', response.statusCode);
-  console.log('Headers:', response.headers);
-  console.log('Body:', response.body);
+  console.log('\n--- Lambda Response ---', response);
 })();
