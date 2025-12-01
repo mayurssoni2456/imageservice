@@ -1,7 +1,7 @@
 resource "aws_lambda_function" "this" {
   function_name    = var.function_name
   role             = var.role_arn
-  handler          = "handler.handler"
+  handler          = var.handler
   runtime          = "nodejs18.x"
   filename         = var.lambda_package_path
   source_code_hash = filebase64sha256(var.lambda_package_path)

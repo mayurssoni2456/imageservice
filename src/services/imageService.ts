@@ -4,7 +4,6 @@ import { IImageStorageService } from './imageStorageService.interface';
 import { IImageRepository } from '../repositories/imageRepository.interface';
 import { ImageRepository } from '../repositories/imageRepository';
 import { ImageMetadata } from '../models/imageMetadata.model';
-import { NotFoundError } from '../common/errors';
 import { getLogger } from '../common/logger';
 
 const logger = getLogger('ImageService');
@@ -49,7 +48,9 @@ export class ImageService {
       originalName,
       contentType,
       size: 0, // Unknown until upload completes
+      url: '', // Public S3 URL will be set after upload
       uploadedAt: new Date().toISOString(),
+      status: 'pending',
     };
 
     await this.imageRepository.save(metadata);
@@ -62,21 +63,19 @@ export class ImageService {
     };
   }
 
-  async getImage(
-    imageId: string
-  ): Promise<{ buffer: Buffer; contentType: string }> {
-    logger.info('getImage called', { imageId });
+  async getImageMetaData(imageId: string): Promise<ImageMetadata | null> {
+    logger.info('getImageMetaData called', { imageId });
     // Check metadata exists
     const metadata = await this.imageRepository.findById(imageId);
     if (!metadata) {
-      throw new NotFoundError();
+      return null;
     }
 
     // Retrieve from S3
-    const image = await this.storageService.getImage(imageId);
+    // const image = await this.storageService.getImage(imageId);
 
-    logger.info(`Image retrieved successfully: ${imageId}`);
-    return image;
+    logger.info(`getImageMetaData retrieved successfully: ${imageId}`);
+    return metadata;
   }
 
   async deleteImage(imageId: string): Promise<void> {
@@ -84,7 +83,7 @@ export class ImageService {
     // Check metadata exists
     const metadata = await this.imageRepository.findById(imageId);
     if (!metadata) {
-      throw new NotFoundError();
+      return;
     }
 
     // Delete from S3

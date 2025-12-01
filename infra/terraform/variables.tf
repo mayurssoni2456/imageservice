@@ -1,13 +1,19 @@
 variable "aws_region" {
   description = "AWS region for deployment"
   type        = string
-  default     = "us-east-1"
+  default     = "ap-south-1"
+}
+
+variable "s3_event_lambda_package_path" {
+  description = "Path to the s3 event Lambda deployment zip"
+  type        = string
+  default     = "../../dist/s3EventHandler.zip"
 }
 
 variable "lambda_package_path" {
   description = "Path to the Lambda deployment zip"
   type        = string
-  default     = "../../dist/handler.zip"
+  default     = "../../dist/api.zip"
 }
 
 variable "stage_name" {
@@ -47,4 +53,10 @@ variable "s3_bucket_name" {
   description = "Name of the S3 bucket for image storage"
   type        = string
   default     = "imageservice-dev"
+}
+
+variable "dynamodb_table_name" {
+  description = "Name of the DynamoDB table for image metadata"
+  type        = string
+  default     = "ImageMetadata"
 }

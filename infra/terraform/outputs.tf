@@ -21,7 +21,7 @@ output "lambda_function_name" {
 
 output "s3_bucket_name" {
   description = "S3 bucket name for image storage"
-  value       = aws_s3_bucket.images.id
+  value       = aws_s3_bucket.images_new.id
 }
 
 output "dynamodb_table_name" {

@@ -1,7 +1,7 @@
-import * as imageController from './controllers/imageController';
-import { ApiResponse } from './common/apiResponse';
-import { handleError } from './common/errorHandler';
-import { LambdaEvent } from './dto/image.dto';
+import * as imageController from '../../controllers/imageController';
+import { ApiResponse } from '../../common/apiResponse';
+import { handleError } from '../../common/errorHandler';
+import { LambdaEvent } from '../../dto/image.dto';
 
 type Handler = (event: LambdaEvent) => Promise<ApiResponse> | ApiResponse;
 

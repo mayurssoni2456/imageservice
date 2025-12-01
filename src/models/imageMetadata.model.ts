@@ -4,4 +4,6 @@ export interface ImageMetadata {
   contentType: string;
   size: number;
   uploadedAt: string;
+  url: string; // Public S3 URL
+  status?: 'pending' | 'uploaded' | 'failed';
 }

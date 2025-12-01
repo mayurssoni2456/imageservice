@@ -1,6 +1,7 @@
 export enum HttpStatus {
   OK = 200,
   CREATED = 201,
+  NO_CONTENT = 204,
   BAD_REQUEST = 400,
   NOT_FOUND = 404,
   INTERNAL_ERROR = 500,
@@ -15,9 +16,14 @@ export class ApiResponse {
   ) {}
 
   static json(statusCode: number, payload: unknown): ApiResponse {
-    return new ApiResponse(statusCode, JSON.stringify(payload));
+    return new ApiResponse(statusCode, JSON.stringify(payload), {
+      'Content-Type': 'application/json',
+    });
   }
 
+  static no_content(payload: unknown): ApiResponse {
+    return ApiResponse.json(HttpStatus.NO_CONTENT, payload);
+  }
   static ok(payload: unknown): ApiResponse {
     return ApiResponse.json(HttpStatus.OK, payload);
   }

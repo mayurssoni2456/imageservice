@@ -1,4 +1,4 @@
-import { handler } from '../src/handler';
+import { handler } from '../src/handlers/api/handler';
 import { LambdaEvent } from '../src/dto/image.dto';
 
 // Mock uuid to avoid ESM import issues in Jest
@@ -51,7 +51,7 @@ describe('Lambda Handler - API Gateway Events', () => {
       });
     });
 
-    it('should return 404 when image does not exist', async () => {
+    it('should return 204 when image does not exist', async () => {
       const event = {
         routeKey: 'GET /images/{id}',
         pathParameters: { id: 'non-existent-id' },
@@ -68,10 +68,10 @@ describe('Lambda Handler - API Gateway Events', () => {
 
       const result: any = await handler(event);
 
-      expect(result.statusCode).toBe(404);
+      expect(result.statusCode).toBe(204);
       expect(JSON.parse(result.body)).toEqual({
-        success: false,
-        error: 'Image not found',
+        success: true,
+        message: '',
       });
     });
   });
@@ -101,7 +101,7 @@ describe('Lambda Handler - API Gateway Events', () => {
       });
     });
 
-    it('should return 404 when trying to delete non-existent image', async () => {
+    it('should return 204 when trying to delete non-existent image', async () => {
       const event = {
         routeKey: 'DELETE /images/{id}',
         pathParameters: { id: 'non-existent-id' },
@@ -118,10 +118,10 @@ describe('Lambda Handler - API Gateway Events', () => {
 
       const result: any = await handler(event);
 
-      expect(result.statusCode).toBe(404);
+      expect(result.statusCode).toBe(204);
       expect(JSON.parse(result.body)).toEqual({
-        success: false,
-        error: 'Image not found',
+        success: true,
+        message: '',
       });
     });
   });

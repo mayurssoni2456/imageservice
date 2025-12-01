@@ -41,14 +41,13 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "images" {
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "images" {
-  bucket                  = aws_s3_bucket.images.id
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
+resource "aws_s3_bucket_public_access_block" "images_new" {
+  bucket                  = aws_s3_bucket.images_new.id
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
 }
-
 # --- New S3 Bucket for Image Storage ---
 resource "aws_s3_bucket" "images_new" {
   bucket        = var.s3_bucket_name
@@ -72,17 +71,26 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "images_new" {
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "images_new" {
-  bucket                  = aws_s3_bucket.images_new.id
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
+resource "aws_s3_bucket_policy" "public_read" {
+  bucket = aws_s3_bucket.images_new.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "PublicReadGetObject"
+        Effect    = "Allow"
+        Principal = "*"
+        Action    = "s3:GetObject"
+        Resource  = "${aws_s3_bucket.images_new.arn}/*"
+      }
+    ]
+  })
 }
 
 # --- DynamoDB Table for Image Metadata ---
 resource "aws_dynamodb_table" "image_metadata" {
-  name         = "ImageMetadata"
+  name         = var.dynamodb_table_name
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "imageId"
 
@@ -92,6 +100,20 @@ resource "aws_dynamodb_table" "image_metadata" {
   }
 
   tags = var.tags
+}
+
+# --- S3 Event Notification for Lambda Trigger ---
+resource "aws_s3_bucket_notification" "images_new_upload" {
+  bucket = aws_s3_bucket.images_new.id
+
+  lambda_function {
+    lambda_function_arn = module.s3_event_lambda.function_arn
+    events              = ["s3:ObjectCreated:Put"]
+    filter_prefix       = ""
+    filter_suffix       = ""
+  }
+
+  depends_on = [module.s3_event_lambda, aws_lambda_permission.allow_s3_invoke]
 }
 
 # --- Get current AWS account ID ---
@@ -116,10 +138,35 @@ module "iam" {
 }
 
 # --- Lambda deployment package placeholder ---
+
+# --- S3 Event Handler Lambda ---
+module "s3_event_lambda" {
+  source              = "./modules/lambda"
+  function_name       = "imageservice-s3event"
+  handler             = "handlers/lambda/s3EventHandler.handler"
+  role_arn            = module.iam.lambda_role_arn
+  lambda_package_path = var.s3_event_lambda_package_path
+  environment         = var.stage_name
+  s3_bucket_name      = aws_s3_bucket.images_new.id
+  dynamodb_table_name = aws_dynamodb_table.image_metadata.name
+  tags                = var.tags
+}
+
+resource "aws_lambda_permission" "allow_s3_invoke" {
+  statement_id  = "AllowExecutionFromS3"
+  action        = "lambda:InvokeFunction"
+  function_name = module.s3_event_lambda.function_name
+  principal     = "s3.amazonaws.com"
+  source_arn    = aws_s3_bucket.images_new.arn
+}
+
 # Expect build artifact at ../dist/handler.zip (we'll add npm script)
+  
+
 module "lambda" {
   source              = "./modules/lambda"
   function_name       = "imageservice"
+  handler             = "handlers/api/handler.handler"
   role_arn            = module.iam.lambda_role_arn
   lambda_package_path = var.lambda_package_path
   environment         = var.stage_name

@@ -7,8 +7,10 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "build": "rm -rf dist && tsc",
-    "start": "node dist/handler.js",
+    "build": "tsc",
+    "start": "node dist/handlers/api/index.js",
+    "start:api": "node dist/handlers/api/index.js",
+    "start:s3": "node dist/handlers/s3-events/image-upload.js",
     "local:get": "tsx scripts/run-local.ts events/get-image.json",
     "local:delete": "tsx scripts/run-local.ts events/delete-image.json",
     "local:presign": "tsx scripts/run-local.ts events/presign.json",
@@ -31,6 +33,10 @@
     "infra:bootstrap:apply": "terraform -chdir=infra/bootstrap apply -auto-approve",
     "infra:destroy:dev": "terraform -chdir=infra/terraform workspace select dev && terraform destroy -var-file=env/dev.tfvars",
     "infra:package": "npm run build && cp package.json package-lock.json dist/ && cd dist && npm ci --omit=dev --ignore-scripts && zip -r handler.zip . && cd ..",
+    "infra:package:api": "npm run build && mkdir -p build/api && cp -r dist/* build/api/ && cp package.json package-lock.json build/api/ && cd build/api && npm ci --omit=dev --ignore-scripts && rm package.json package-lock.json && zip -r api.zip . && mv api.zip ../../dist/ && cd ../..",
+    "infra:package:s3": "npm run build && mkdir -p build/s3EventHandler && cp -r dist/* build/s3EventHandler/ && cp package.json package-lock.json build/s3EventHandler/ && cd build/s3EventHandler && npm ci --omit=dev --ignore-scripts && rm package.json package-lock.json && zip -r s3EventHandler.zip . && mv s3EventHandler.zip ../../dist/ && cd ../..",
+    "infra:package:all": "npm run infra:clean && npm run infra:package:api && npm run infra:package:s3",
+    "infra:clean": "rm -rf dist build",
     "infra:outputs": "terraform -chdir=infra/terraform output -json",
     "prepare": ""
   },

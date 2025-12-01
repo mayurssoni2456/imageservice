@@ -54,6 +54,7 @@ data "aws_iam_policy_document" "lambda_s3_dynamodb" {
       "dynamodb:DeleteItem",
       "dynamodb:Query",
       "dynamodb:Scan",
+      "dynamodb:UpdateItem"
     ]
     resources = [var.dynamodb_table_arn]
   }

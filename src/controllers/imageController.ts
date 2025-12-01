@@ -49,9 +49,15 @@ export async function getImage(event: LambdaEvent): Promise<ApiResponse> {
   const id = event.pathParameters?.id;
   if (!id) throw new ValidationError('Image ID is required');
 
-  const { buffer, contentType } = await imageService.getImage(id);
-  logger.info('getImage success', event, { id, contentType });
-  return ApiResponse.binary(buffer, contentType);
+  const metadata = await imageService.getImageMetaData(id);
+  if (!metadata) {
+    return ApiResponse.no_content({
+      success: true,
+      message: '',
+    });
+  }
+  logger.info('getImage success', event, metadata.imageId);
+  return ApiResponse.ok(metadata);
 }
 
 export async function deleteImage(event: LambdaEvent): Promise<ApiResponse> {
@@ -61,8 +67,8 @@ export async function deleteImage(event: LambdaEvent): Promise<ApiResponse> {
 
   await imageService.deleteImage(id);
   logger.info('deleteImage success', event, { id });
-  return ApiResponse.ok({
+  return ApiResponse.no_content({
     success: true,
-    message: 'Image deleted successfully',
+    message: '',
   });
 }

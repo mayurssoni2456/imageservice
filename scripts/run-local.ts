@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import { handler } from '../src/handler';
+import { handler } from '../src/handlers/api/handler';
 import { LambdaEvent } from '../src/dto/image.dto';
 
 function usage(): void {
