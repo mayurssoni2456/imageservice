@@ -40,10 +40,8 @@ This compiles TypeScript to CommonJS and packages the Lambda deployment artifact
 #### Bootstrap Remote State (One-time setup)
 
 ```bash
-cd infra/bootstrap
-terraform init
-terraform apply -var="bucket_name=imageservice-tfstate-<your-account-id>-us-east-1" -auto-approve
-cd ../..
+npm run infra:bootstrap:init
+npm run infra:bootstrap:apply
 ```
 
 #### Deploy to Development
@@ -88,7 +86,7 @@ curl "<api_base_url>/images/<image_id>"
 ### Build & Package
 
 - `npm run build` - Compile TypeScript to CommonJS (dist/)
-- `npm run infra:package` - Create Lambda deployment package (handler.zip)
+- `npm run infra:package:all` - Create 2 Lambda deployment package
 
 ### Infrastructure
 
