@@ -1,4 +1,5 @@
 # imageservice
+[![Coverage Report](https://img.shields.io/badge/coverage-view_report-blue)](https://mayurssoni2456.github.io/imageservice/)
 
 Serverless image upload service built with TypeScript, AWS Lambda, API Gateway, S3, and DynamoDB.
 
