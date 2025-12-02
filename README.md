@@ -182,6 +182,7 @@ aws logs filter-log-events \
 
 ## Known Limitations
 
+- When Image is not passed in pre-signed URL currently, it creates empty image. Need validation in s3EventHandler to validate if the size is 0, mark the record in db as failed.
 - No CI/CD pipeline - deployments are manual
 - Currently, for code reusability maintaining API Lambda and s3EventLambda in the same codebase. This means 2 handler zip with different entry point. Later, I would structure something
 ```bash
