@@ -1,6 +1,9 @@
 # imageservice
 [![Coverage Report](https://img.shields.io/badge/coverage-view_report-blue)](https://mayurssoni2456.github.io/imageservice/)
-
+## Notes
+- I used AI as a productivity enhancer — mainly for boilerplate, syntax queries, and refactoring suggestions.
+- I treated this assignment like a real project, solving the core problem myself and using AI where it added speed without sacrificing understanding
+  
 Serverless image upload service built with TypeScript, AWS Lambda, API Gateway, S3, and DynamoDB.
 
 ## Architecture
