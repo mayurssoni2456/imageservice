@@ -182,8 +182,6 @@ aws logs filter-log-events \
 
 ## Known Limitations
 
-- CORS in prod is currently set to wildcard (\*) - should be restricted to specific frontend domains
-- No CloudWatch alarms configured - manual monitoring required
 - No CI/CD pipeline - deployments are manual
 - Currently, for code reusability maintaining API Lambda and s3EventLambda in the same codebase. This means 2 handler zip with different entry point. Later, I would structure something
 ```bash
